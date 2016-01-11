@@ -67,17 +67,17 @@ def loadCSV(dest_dir, file_name, i=0):
     n_samples = int(len(raw_data))
     n_features = int(len(raw_data)-1)
 
-#    data = raw_data[:, :-1]
-#    target = raw_data[:, -1]
+    data = raw_data[:, :-1]
+    target = raw_data[:, -1]
 
-    data = np.empty((n_samples, n_features))
-    target = np.empty((n_samples,))
-
-    for sample in raw_data:
-        data[i] = np.asarray(sample[:-1], dtype="float")
-        target[i] = np.asarray(sample[-1], dtype="float")
-        i += 1
-
+#    data = np.empty((n_samples, n_features))
+#    target = np.empty((n_samples,))
+#
+#    for sample in raw_data:
+#        data[i] = np.asarray(sample[:-1], dtype="float")
+#        target[i] = np.asarray(sample[-1], dtype="float")
+#        i += 1
+#
     return Bunch(data=data, target=target)
 
 
@@ -103,8 +103,8 @@ def computeCOD(nb_pred, dt_pred, targets, N):
 if __name__ == "__main__":
     # Find out what methods the directory has
     # methods = [method for method in dir(datasets) if callable(getattr(datasets, method)) and "load" in method]
-    custom_data_home = tempfile.mkdtemp()
-    dataset_dir_home = '/home/salt/Desktop/cs676/COD/datasets'
+    #custom_data_home = tempfile.mkdtemp()
+    dataset_dir_home = '/users/guest/a/agolotin/CS676/COD/datasets'
 
     '''
     diabetes: (768 instances, 8 attributes)
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     Daily and Sports activity: (9120 instances, 5625 attributes)
     '''
 
-    dataset_names = ['social_media/TomsHardware/TomsHardware','social_media/Twitter/Twitter', 'pima-indians-diabetes']#['MNIST Original', 'leukemia', 'diabetes']
+    dataset_names = ['pima-indians-diabetes', 'iris']#['MNIST Original', 'leukemia', 'diabetes']
 
     cod_vector = list()
     for name in dataset_names:
@@ -146,4 +146,4 @@ if __name__ == "__main__":
             % (sum(cod_vector) / float(len(cod_vector))))
 
     # Clean up the temporary directory
-    shutil.rmtree(custom_data_home)
+    #shutil.rmtree(custom_data_home)
