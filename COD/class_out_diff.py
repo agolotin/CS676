@@ -38,18 +38,16 @@ def runClassifiers(train_set, train_target, test_data, test_target):
     nb_model = gauss_nb.fit(train_set, train_target)
 
     nb_pred = nb_model.predict(test_data)
-    print ("Naive Bayes accuracy: %f" %
-            nb_model.score(test_data, test_target))
+    nb_score = nb_model.score(test_data, test_target)
 
     # Decision tree
     dec_tree = DecisionTreeClassifier()
     dt_model = dec_tree.fit(train_set, train_target)
 
     dt_pred = dt_model.predict(test_data)
-    print ("Decision Tree accuracy: %f" %
-            dt_model.score(test_set, test_target))
+    dt_score = dt_model.score(test_set, test_target)
 
-    return nb_pred, dt_pred
+    return nb_pred, dt_pred, nb_score, dt_score
 
 
 ''' Load a general CSV file and return a Bunch data structure
@@ -124,14 +122,14 @@ if __name__ == "__main__":
             seed = randint(0, dataset.data.shape[0])
             train_set, test_set, train_target, test_target = crossValidationSplit(seed, dataset)
 
-            nb_pred, dt_pred = runClassifiers(train_set, train_target, test_set, test_target)
+            nb_pred, dt_pred, nb_score, dt_score = runClassifiers(train_set, train_target, test_set, test_target)
 
             COD = computeCOD(nb_pred, dt_pred, test_target, len(test_target))
             cod_vector.append(COD)
             dataset_cod_vector.append(COD)
 
-            print ("Classifier Output Difference for dataset %s, seed %d is %f"
-                    % (name.upper().split('/')[-1], seed, COD))
+            print ("%d, %f, %f, %f"
+                    % (seed, nb_score, dt_score, COD))
 
         print ("Average COD between Naive Bayes and Decision Tree for dataset %s: %f"
                 % (name.upper().split('/')[-1], sum(dataset_cod_vector) / float(len(dataset_cod_vector))))
