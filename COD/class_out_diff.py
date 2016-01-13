@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 
-import shutil
-import tempfile
+#import shutil #import tempfile
 import csv
 
 from sklearn import datasets
@@ -31,8 +30,6 @@ def crossValidationSplit(seed, dataset):
                test_set.append(dataset.data[test_i])
                test_target.append(dataset.target[test_i])
 
-    #return (np.array(train_set).astype(float), np.array(test_set).astype(float), 
-    #        np.array(train_target).astype(float), np.array(test_target).astype(float))
     return train_set, test_set, train_target, test_target
 
 def runClassifiers(train_set, train_target, test_data, test_target):
@@ -67,16 +64,16 @@ def loadCSV(dest_dir, file_name, i=0):
     n_samples = int(len(raw_data))
     n_features = int(len(raw_data)-1)
 
-#    data = raw_data[:, :-1]
-#    target = raw_data[:, -1]
+    data = raw_data[:, :-1]
+    target = raw_data[:, -1]
 
-    data = np.empty((n_samples, n_features))
-    target = np.empty((n_samples,))
-
-    for sample in raw_data:
-        data[i] = np.asarray(sample[:-1], dtype="float")
-        target[i] = np.asarray(sample[-1], dtype="float")
-        i += 1
+#    data = np.empty((n_samples, n_features))
+#    target = np.empty((n_samples,))
+#
+#    for sample in raw_data:
+#        data[i] = np.asarray(sample[:-1], dtype="float")
+#        target[i] = np.asarray(sample[-1], dtype="float")
+#        i += 1
 
     return Bunch(data=data, target=target)
 
@@ -103,25 +100,23 @@ def computeCOD(nb_pred, dt_pred, targets, N):
 if __name__ == "__main__":
     # Find out what methods the directory has
     # methods = [method for method in dir(datasets) if callable(getattr(datasets, method)) and "load" in method]
-    custom_data_home = tempfile.mkdtemp()
-    dataset_dir_home = '/home/salt/Desktop/cs676/COD/datasets'
+    #custom_data_home = tempfile.mkdtemp()
+    dataset_dir_home = '/home/salt/Desktop/CS676/COD/datasets'
 
     '''
     diabetes: (768 instances, 8 attributes)
-    Twitter: (38393 instances, 77 attributes)
-    HIGGS: (11000000 instances, 28 attributes)
-    Gas sensor flow: (4178504 instances, 19 attribuets)
     Daily and Sports activity: (9120 instances, 5625 attributes)
     '''
 
-    dataset_names = ['social_media/TomsHardware/TomsHardware','social_media/Twitter/Twitter', 'pima-indians-diabetes']#['MNIST Original', 'leukemia', 'diabetes']
+    
+    dataset_names = ['sensorless_drive_diagnosis', 'diabetes', 'pima-indians-diabetes', 'iris']#['MNIST Original', 'leukemia', 'diabetes']
 
     cod_vector = list()
     for name in dataset_names:
         # Get the dataset
         #dataset = datasets.fetch_mldata(name, data_home=custom_data_home)
         dataset = loadCSV(dataset_dir_home, name)
-        print "Dataset %s is loaded" % name.upper().split('/')[-1]
+        print "Dataset {0} is loaded, shape {1}".format(name.upper().split('/')[-1], dataset.data.shape)
 
         dataset_cod_vector = list()
         for i in xrange(10):
@@ -136,14 +131,14 @@ if __name__ == "__main__":
             dataset_cod_vector.append(COD)
 
             print ("Classifier Output Difference for dataset %s, seed %d is %f"
-                    % (name.upper(), seed, COD))
+                    % (name.upper().split('/')[-1], seed, COD))
 
-        print ("Average COD between Naive Bayes and Decision Tree: %f"
-                % (sum(dataset_cod_vector) / float(len(dataset_cod_vector))))
+        print ("Average COD between Naive Bayes and Decision Tree for dataset %s: %f"
+                % (name.upper().split('/')[-1], sum(dataset_cod_vector) / float(len(dataset_cod_vector))))
         print # Separate datasets by new line
     
     print ("Average COD between Naive Bayes and Decision Tree: %f"
             % (sum(cod_vector) / float(len(cod_vector))))
 
     # Clean up the temporary directory
-    shutil.rmtree(custom_data_home)
+    #shutil.rmtree(custom_data_home)
